@@ -51,8 +51,8 @@ file `data/Teams.csv` to map "teamID" to a team's real name.
 
 ## A. Installation
 
-1- Use RVM or rbenv
-2- clone this repository and `cd` into it, then `bundle install`
+1. Use RVM or rbenv
+2. clone this repository and `cd` into it, then `bundle install`
 
 The dependencies are:
 
@@ -105,12 +105,12 @@ The app is separated in 3 layers
 
 1. The Thor command that launches the app
 2. UI layer, implemented in `lib/batting_averages_ui.rb`. This layer handles the output presentation, the textual interactivity and the REPL loop
-3- Engine layer, implemented in `lib/batting_averages_engine.rb`. This layer is responsible of the CSV parsing and ranking calculations
+3. Engine layer, implemented in `lib/batting_averages_engine.rb`. This layer is responsible of the CSV parsing and ranking calculations
 
 **Strategies**
 
 + Caching of the global ranking because this is heavy to process (100k+ lines and we cannot leverage indexes)
 + Ahead of time indexing by year and by team. This speeds up the parsing when filtering is asked by the user (no need of cache)
-+ Usage of Set: offers a time complexity advantage when filtering is asked by the user (~ set intersection)
++ Usage of `Set`: provides a time complexity advantage when filtering is asked by the user (~ set intersection)
 + For readability in the UI, the tables are presented in pages of 30 by 30, which is reset to page 1 (top ranks) whenever the filtering criteria changes
 
