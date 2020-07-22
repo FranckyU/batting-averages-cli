@@ -111,6 +111,6 @@ The app is separated in 3 layers
 
 + Caching of the global ranking because this is heavy to process (100k+ lines and we cannot leverage indexes)
 + Ahead of time indexing by year and by team. This speeds up the parsing when filtering is asked by the user (no need of cache)
-+ Usage of `Set`: provides a time complexity advantage when filtering is asked by the user (~ set intersection)
++ Usage of `Set`: provides a time complexity advantage when filtering is asked by the user (~ set intersection) + automatic data cleaning (removal of duplicate rows)
 + For readability in the UI, the tables are presented in pages of 30 by 30, which is reset to page 1 (top ranks) whenever the filtering criteria changes
 
