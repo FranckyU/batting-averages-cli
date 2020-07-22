@@ -103,7 +103,7 @@ The test file skips the CSV parsing and jumps directly to use parsed data. A glo
 
 The app is separated in 3 layers
 
-1. The Thor command that launches the app
+1. The Thor command that launches the app, in `cli.thor`.
 2. UI layer, implemented in `lib/batting_averages_ui.rb`. This layer handles the output presentation, the textual interactivity and the REPL loop
 3. Engine layer, implemented in `lib/batting_averages_engine.rb`. This layer is responsible of the CSV parsing and ranking calculations
 
