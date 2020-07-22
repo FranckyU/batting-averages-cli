@@ -28,7 +28,7 @@ class BattingAveragesUi
     answer_to('all')
 
     loop do
-      puts "\nPress ENTER to reload the ranking, or type a specific command (type h|H|help|HELP to see available commands) [Ctrl+D or `q` to exit]"
+      puts "\nPress ENTER to reload the ranking, or type a specific command (type h|H|help|HELP to see available commands)"
       print Paint['|> ', :blue, :bright]
 
       user_command = STDIN.gets&.chomp
@@ -52,7 +52,7 @@ private
 
     case user_command.strip
     when /^h|help$/i
-      puts "1. `all` or ENTER -> displays global ranking\n2. `in {4_digits_year}` -> displays ranking for this year\n3. `of {team_name}` -> displays ranking within this team from its inception\n4. `of {team_name} in {4_digits_year}` -> combination of 2 and 3\n5. `list years`\n6. `list teams`\n7. `p, previous`\n8. `n, next`"
+      puts "1. `all` or ENTER -> displays global ranking\n2. `in {4_digits_year}` -> displays ranking for this year\n3. `of {team_name}` -> displays ranking within this team from its inception\n4. `of {team_name} in {4_digits_year}` -> combination of 2 and 3\n5. `list years`\n6. `list teams`\n7. `n` or `next` -> go to next page\n8. `p` or `previous` -> back to previous page\n9. `q` or Ctrl+D -> exit"
     when /^list years$/i
       puts @processor.all_years.join(', ')
     when /^list teams$/i
