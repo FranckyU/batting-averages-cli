@@ -60,6 +60,11 @@ The dependencies are:
 + [tty-spinner](https://github.com/piotrmurach/tty-spinner) for the UI when the CSV is loading. From the excelent [TTY toolkit](https://ttytoolkit.org/) suite.
 + [tty-table](https://github.com/piotrmurach/tty-table) to format the ranking results in ASCII tables
 + [Paint](https://github.com/janlelis/paint) to color the blue prompt
++ [SortedArrayBinary](https://github.com/ledestin/sorted_array_binary) that allows for fast sorting on items insertion in the rank.
+
+From the Standard Library:
+
+[Set](https://ruby-doc.org/stdlib-2.7.1/libdoc/set/rdoc/Set.html) for fast filtering by set intersection and duplicate cleanup.
 
 ## B. Running the CLI app
 
@@ -112,5 +117,6 @@ The app is separated in 3 layers
 + Caching of the global ranking because this is heavy to process (100k+ lines and we cannot leverage indexes)
 + Ahead of time indexing by year and by team. This speeds up the parsing when filtering is asked by the user (no need of cache)
 + Usage of `Set`: provides a time complexity advantage when filtering is asked by the user (~ set intersection) + automatic data cleaning (removal of duplicate rows)
++ Usage of `SortedArrayBinary` that is faster than native Array for sorting items.
 + For readability in the UI, the tables are presented in pages of 30 by 30, which is reset to page 1 (top ranks) whenever the filtering criteria changes
 

@@ -3,6 +3,7 @@
 require 'csv'
 require 'ostruct'
 require 'set'
+require 'sorted_array_binary'
 
 require_relative 'utils/paginator'
 
@@ -84,8 +85,12 @@ class BattingAveragesEngine
         res[[item[:playerid], item[:yearid]]].at_bats += item[:ab]
       end
 
-      res = res.map do |key, struct|
-        [
+      sorted_ranking = SortedArrayBinary.new do |a, b| 
+        b[3] <=> a[3] # DESC order
+      end
+
+      res = res.each do |key, struct|
+        sorted_ranking << [
           key[0],
           key[1],
           @teams_data_by_team_id.values_at(*struct.team_ids.uniq).flatten.map(&:team_name).join(', '),
@@ -93,14 +98,10 @@ class BattingAveragesEngine
         ]
       end
 
-      res = res.sort do |a, b|
-        b[3] <=> a[3] # DESC order
-      end
-
       # CACHE global result to speed up things since we can't leverage indexes
-      @global_result_cache = res if [year, team].none?
+      @global_result_cache = sorted_ranking if [year, team].none?
 
-      res
+      sorted_ranking
     end
 
     # update_pagination
