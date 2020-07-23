@@ -89,7 +89,7 @@ class BattingAveragesEngine
         b[3] <=> a[3] # DESC order
       end
 
-      res = res.each do |key, struct|
+      res.each do |key, struct|
         sorted_ranking << [
           key[0],
           key[1],
