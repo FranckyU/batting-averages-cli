@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/FranckyU/sorted_array_binary.git
-  revision: fa3ffb257dc5c1bb219a18887526afe985d3ec00
-  ref: fa3ffb257dc5c1bb219a18887526afe985d3ec00
+  revision: 6a8dd894e379d4d4cbb674aa8ce45feb5a6d2315
+  ref: 6a8dd894e379d4d4cbb674aa8ce45feb5a6d2315
   specs:
     sorted_array_binary (0.0.3)
       bsearch20 (~> 1.6)
