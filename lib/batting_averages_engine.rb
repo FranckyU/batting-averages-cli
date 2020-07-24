@@ -1,5 +1,8 @@
 # encoding: UTF-8
 
+require 'bundler'
+Bundler.setup
+
 require 'csv'
 require 'ostruct'
 require 'set'

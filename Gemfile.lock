@@ -1,7 +1,15 @@
+GIT
+  remote: https://github.com/FranckyU/sorted_array_binary.git
+  revision: fa3ffb257dc5c1bb219a18887526afe985d3ec00
+  ref: fa3ffb257dc5c1bb219a18887526afe985d3ec00
+  specs:
+    sorted_array_binary (0.0.3)
+      bsearch20 (~> 1.6)
+
 GEM
   remote: https://rubygems.org/
   specs:
-    bsearch (1.5.0)
+    bsearch20 (1.6.0)
     byebug (11.1.3)
     equatable (0.6.1)
     necromancer (0.6.0)
@@ -9,8 +17,6 @@ GEM
     pastel (0.7.4)
       equatable (~> 0.6)
       tty-color (~> 0.5)
-    sorted_array_binary (0.0.3)
-      bsearch (~> 1.5)
     strings (0.1.8)
       strings-ansi (~> 0.1)
       unicode-display_width (~> 1.5)
@@ -37,10 +43,13 @@ PLATFORMS
 DEPENDENCIES
   byebug
   paint
-  sorted_array_binary
+  sorted_array_binary!
   thor (~> 1.0, >= 1.0.1)
   tty-spinner
   tty-table
+
+RUBY VERSION
+   ruby 2.7.0p0
 
 BUNDLED WITH
    2.1.2
