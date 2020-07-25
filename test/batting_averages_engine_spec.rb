@@ -7,7 +7,7 @@ describe BattingAveragesEngine do
   before do
     @engine = BattingAveragesEngine.new
 
-    default_batting_data = [
+    default_batting_data = Set.new([
       {yearid: 2019, teamid: 'A', playerid: 'jhn1', h: 1, ab: 10}, # BA = 1/10
       {yearid: 2019, teamid: 'B', playerid: 'bob42', h: 3, ab: 10}, # BA = 3/10
       {yearid: 2019, teamid: 'A', playerid: 'alice8', h: 5, ab: 10}, # BA = 1/2
@@ -19,15 +19,15 @@ describe BattingAveragesEngine do
       {yearid: 2020, teamid: 'B', playerid: 'malory9', h: 4, ab: 5},
 
       {yearid: 2020, teamid: nil, playerid: 'xavi22', h: 3, ab: 3} # BA = 1
-    ]
+    ])
 
-    invalid_batting_data = [
+    invalid_batting_data = Set.new([
       {teamid: 'A', playerid: 'jhn1', h: 10, ab: 10}, # BA = 1
       {yearid: 2019, teamid: nil, playerid: nil, h: 10, ab: 10},
       {yearid: 2019, teamid: 'A', playerid: 'scott0', h: 10, ab: nil},
       {yearid: 2019, teamid: 'B', playerid: 'hugh', h: nil, ab: 10},
       {yearid: 2019, teamid: 'B', playerid: 'marcello'}
-    ]
+    ])
 
     @teams_data = [
       {teamid: 'A', name: 'Team A'},
@@ -37,7 +37,7 @@ describe BattingAveragesEngine do
     @test_matrix = {
       empty: [
         {
-          batting_data: [],
+          batting_data: Set.new,
           expected_ranking_result: []
         }
       ],

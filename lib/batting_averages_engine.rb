@@ -16,9 +16,8 @@ class BattingAveragesEngine
   attr_accessor :batting_data, :teams_data, :limit # For TEST stub & limit extension
 
   def initialize
-    @batting_data = []
+    @batting_data = Set.new
     @teams_data = []
-
     @global_result_cache = nil
 
     initialize_pagination!
@@ -26,7 +25,8 @@ class BattingAveragesEngine
 
   # EXTRACT
   def fetch_data!
-    @batting_data = CSV.read(File.join(__dir__, "../data/Batting.csv"), headers: true, encoding: 'UTF-8', header_converters: :symbol, converters: :all)
+    # Set is a better data structure for computing the intersection of indexed data AND cleaning up duplicate elements
+    @batting_data = CSV.read(File.join(__dir__, "../data/Batting.csv"), headers: true, encoding: 'UTF-8', header_converters: :symbol, converters: :all).to_set
     @teams_data = CSV.read(File.join(__dir__, "../data/Teams.csv"), headers: true, encoding: 'UTF-8', header_converters: :symbol, converters: :all)
   rescue
     # falls back to initial state -> no ranking for ill formed or missing CSVs
@@ -34,8 +34,8 @@ class BattingAveragesEngine
 
   # TRANSFORM
   def build_indexes!
-    @batting_data_by_year_id = @batting_data.group_by{|row| row[:yearid]}
-    @batting_data_by_team_id = @batting_data.group_by{|row| row[:teamid]}
+    @batting_data_by_year_id = @batting_data.classify{|row| row[:yearid]}
+    @batting_data_by_team_id = @batting_data.classify{|row| row[:teamid]}
     
     @teams_data_by_team_id = @teams_data.map{|item| OpenStruct.new(team_id: item[:teamid], team_name: item[:name])}.uniq.group_by(&:team_id)
     @teams_data_by_team_name = @teams_data.map{|item| OpenStruct.new(team_id: item[:teamid], team_name: item[:name])}.uniq.group_by(&:team_name)
@@ -62,8 +62,7 @@ class BattingAveragesEngine
       @global_result_cache
     else
       # TRANSFORM + CLEANUP
-      # Set is a better data structure for computing the intersection of indexed data AND cleaning up duplicate elements
-      working_data = @batting_data.to_set
+      working_data = @batting_data
       working_data = working_data & (@batting_data_by_year_id[year.to_i] || []).to_set unless year.nil?
       
       unless team.nil?
