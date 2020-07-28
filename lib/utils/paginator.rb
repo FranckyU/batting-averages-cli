@@ -11,6 +11,14 @@ module Utils
     end
     alias reset_pagination! initialize_pagination!
 
+    def paginate
+      # update_pagination
+      @total_count = @result.length
+
+      # OUTPUT
+      @result[@offset, @per_page]
+    end
+
     def next_page!
       @offset += @per_page
       @offset = @total_count if @offset > @total_count

@@ -6,7 +6,67 @@ require_relative '../lib/batting_averages_engine'
 describe BattingAveragesEngine do
   before do
     @engine = BattingAveragesEngine.new
+    prepare_test_data
+  end
 
+  it 'must return empty result at initial state' do
+    expect(@engine.batting_data).must_be_empty
+    expect(@engine.teams_data).must_be_empty
+    expect(@engine.result).must_be_empty
+  end
+
+  it 'must return empty result when fed no batting data' do
+    # eq. of @engine.load_data!
+    @engine.batting_data = @test_matrix[:empty][0][:batting_data]
+    @engine.teams_data = @teams_data
+
+    @engine.build_indexes!
+    @engine.fetch_all
+
+    expect(@engine.result).must_be_empty
+  end
+
+  it 'returns all batting averages ranking' do
+    # eq. of @engine.load_data!
+    @engine.batting_data = @test_matrix[:all][0][:batting_data]
+    @engine.teams_data = @teams_data
+
+    @engine.build_indexes!
+    @engine.fetch_all
+
+    expect(@engine.result).must_equal(@test_matrix[:all][0][:expected_ranking_result])
+  end
+
+  it 'should allow filtering' do
+    @test_matrix[:filtered].each do |hash|
+      # eq. of @engine.load_data!
+      @engine.batting_data = hash[:batting_data]
+      @engine.teams_data = @teams_data
+
+      @engine.build_indexes!
+
+      filtering_interface = :fetch_by_team_and_year
+      filtering_interface = :fetch_by_year unless hash[:filters].key?(:team)
+      filtering_interface = :fetch_by_team unless hash[:filters].key?(:year)
+      
+      @engine.send(filtering_interface, **hash[:filters])
+
+      expect(@engine.result).must_equal(hash[:expected_ranking_result])
+    end
+  end
+
+  it 'must ignore invalid data' do
+    # eq. of @engine.load_data!
+    @engine.batting_data = @test_matrix[:with_invalid][0][:batting_data]
+    @engine.teams_data = @teams_data
+
+    @engine.build_indexes!
+    @engine.fetch_all
+
+    expect(@engine.result).must_equal(@test_matrix[:with_invalid][0][:expected_ranking_result])
+  end
+
+  def prepare_test_data
     default_batting_data = Set.new(
       [
         { yearid: 2019, teamid: 'A', playerid: 'jhn1', h: 1, ab: 10 }, # BA = 1/10
@@ -104,52 +164,5 @@ describe BattingAveragesEngine do
         }
       ]
     }
-  end
-
-  it 'must return empty result at initial state' do
-    expect(@engine.batting_data).must_be_empty
-    expect(@engine.teams_data).must_be_empty
-  end
-
-  it 'must return empty result when fed no batting data' do
-    # eq. of @engine.fetch_data!
-    @engine.batting_data = @test_matrix[:empty][0][:batting_data]
-    @engine.teams_data = @teams_data
-
-    @engine.build_indexes!
-
-    expect(@engine.get_all).must_be_empty
-  end
-
-  it 'returns all batting averages ranking' do
-    # eq. of @engine.fetch_data!
-    @engine.batting_data = @test_matrix[:all][0][:batting_data]
-    @engine.teams_data = @teams_data
-
-    @engine.build_indexes!
-
-    expect(@engine.get_all).must_equal(@test_matrix[:all][0][:expected_ranking_result])
-  end
-
-  it 'should allow filtering' do
-    @test_matrix[:filtered].each do |hash|
-      # eq. of @engine.fetch_data!
-      @engine.batting_data = hash[:batting_data]
-      @engine.teams_data = @teams_data
-
-      @engine.build_indexes!
-
-      expect(@engine.by(**hash[:filters])).must_equal(hash[:expected_ranking_result])
-    end
-  end
-
-  it 'must ignore invalid data' do
-    # eq. of @engine.fetch_data!
-    @engine.batting_data = @test_matrix[:with_invalid][0][:batting_data]
-    @engine.teams_data = @teams_data
-
-    @engine.build_indexes!
-
-    expect(@engine.get_all).must_equal(@test_matrix[:with_invalid][0][:expected_ranking_result])
   end
 end

@@ -15,7 +15,7 @@ class BattingAveragesUi
   def launch
     spinner = TTY::Spinner.new('[:spinner] Loading CSV data', clear: false)
     spinner.run do |it|
-      @processor.fetch_data!
+      @processor.load_data!
       it.success('(loaded)')
     end
 
@@ -58,23 +58,23 @@ class BattingAveragesUi
     when /^list teams$/i
       puts @processor.all_team_names.join(', ')
     when '', /^all$/i
-      render_table(@processor.get_all)
+      render_table(@processor.fetch_all.paginate)
     when /^of (.+) in (\d+)$/i
       if (has_team = @processor.team?($1)) && (has_year = @processor.year?($2))
-        render_table(@processor.by(team: $1, year: $2))
+        render_table(@processor.fetch_by_team_and_year(team: $1, year: $2).paginate)
       else
         puts "No data for #{$1}" unless has_year
         puts "Unknown team #{$1}" unless has_team
       end
     when /^in (\d{4})$/i
       if @processor.year?($1)
-        render_table(@processor.by(year: $1))
+        render_table(@processor.fetch_by_year(year: $1).paginate)
       else
         puts "No data for #{$1}"
       end
     when /^of (.+)$/i
       if @processor.team?($1)
-        render_table(@processor.by(team: $1))
+        render_table(@processor.fetch_by_team(team: $1).paginate)
       else
         puts "Unknown team #{$1}"
       end
