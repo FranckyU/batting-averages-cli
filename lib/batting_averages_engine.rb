@@ -1,4 +1,4 @@
-# encoding: UTF-8
+# frozen_string_literal: true
 
 require 'bundler'
 Bundler.setup
@@ -26,27 +26,27 @@ class BattingAveragesEngine
   # EXTRACT
   def fetch_data!
     # Set is a better data structure for computing the intersection of indexed data AND cleaning up duplicate elements
-    @batting_data = CSV.read(File.join(__dir__, "../data/Batting.csv"), headers: true, encoding: 'UTF-8', header_converters: :symbol, converters: :all).to_set
-    @teams_data = CSV.read(File.join(__dir__, "../data/Teams.csv"), headers: true, encoding: 'UTF-8', header_converters: :symbol, converters: :all)
-  rescue
+    @batting_data = CSV.read(File.join(__dir__, '../data/Batting.csv'), headers: true, encoding: 'UTF-8', header_converters: :symbol, converters: :all).to_set
+    @teams_data = CSV.read(File.join(__dir__, '../data/Teams.csv'), headers: true, encoding: 'UTF-8', header_converters: :symbol, converters: :all)
+  rescue StandardError => _e
     # falls back to initial state -> no ranking for ill formed or missing CSVs
   end
 
   # TRANSFORM
   def build_indexes!
-    @batting_data_by_year_id = @batting_data.classify{|row| row[:yearid]}
-    @batting_data_by_team_id = @batting_data.classify{|row| row[:teamid]}
+    @batting_data_by_year_id = @batting_data.classify { |row| row[:yearid] }
+    @batting_data_by_team_id = @batting_data.classify { |row| row[:teamid] }
     
-    @teams_data_by_team_id = @teams_data.map{|item| OpenStruct.new(team_id: item[:teamid], team_name: item[:name])}.uniq.group_by(&:team_id)
-    @teams_data_by_team_name = @teams_data.map{|item| OpenStruct.new(team_id: item[:teamid], team_name: item[:name])}.uniq.group_by(&:team_name)
+    @teams_data_by_team_id = @teams_data.map { |item| OpenStruct.new(team_id: item[:teamid], team_name: item[:name]) }.uniq.group_by(&:team_id)
+    @teams_data_by_team_name = @teams_data.map { |item| OpenStruct.new(team_id: item[:teamid], team_name: item[:name]) }.uniq.group_by(&:team_name)
   end
 
-  def has_year?(year)
-    @batting_data_by_year_id.has_key?(year.to_i)
+  def year?(year)
+    @batting_data_by_year_id.key?(year.to_i)
   end
 
-  def has_team?(team)
-    @teams_data_by_team_name.has_key?(team)
+  def team?(team)
+    @teams_data_by_team_name.key?(team)
   end
 
   def all_years
@@ -63,16 +63,14 @@ class BattingAveragesEngine
     else
       # TRANSFORM + CLEANUP
       working_data = @batting_data
-      working_data = working_data & (@batting_data_by_year_id[year.to_i] || []).to_set unless year.nil?
-      
+      working_data &= (@batting_data_by_year_id[year.to_i] || []).to_set unless year.nil?
+
       unless team.nil?
         team_id = @teams_data_by_team_name[team]&.at(0)&.team_id
-        working_data = working_data & (@batting_data_by_team_id[team_id.to_s] || []).to_set unless team_id.nil?
+        working_data &= (@batting_data_by_team_id[team_id.to_s] || []).to_set unless team_id.nil?
       end
 
-      if working_data.empty?
-        return [] 
-      end
+      return [] if working_data.empty?
 
       res = {}
 
@@ -87,7 +85,7 @@ class BattingAveragesEngine
         res[[item[:playerid], item[:yearid]]].at_bats += item[:ab]
       end
 
-      sorted_ranking = SortedArrayBinary.new do |a, b| 
+      sorted_ranking = SortedArrayBinary.new do |a, b|
         b[3] <=> a[3] # DESC order
       end
 
@@ -96,7 +94,7 @@ class BattingAveragesEngine
           key[0],
           key[1],
           @teams_data_by_team_id.values_at(*struct.team_ids.uniq).flatten.map(&:team_name).join(', '),
-          struct.at_bats > 0 ? (struct.hits.to_f/struct.at_bats).round(3) : 0
+          struct.at_bats.positive? ? (struct.hits.to_f / struct.at_bats).round(3) : 0
         ]
       end
 
@@ -112,5 +110,5 @@ class BattingAveragesEngine
     # OUTPUT
     result[@offset, @per_page]
   end
-  alias_method :get_all, :by
+  alias get_all by
 end

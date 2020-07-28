@@ -1,4 +1,4 @@
-# encoding: UTF-8
+# frozen_string_literal: true
 
 require 'tty-spinner'
 require 'tty-table'
@@ -13,16 +13,16 @@ class BattingAveragesUi
   end
 
   def launch
-    spinner = TTY::Spinner.new("[:spinner] Loading CSV data", clear: false)
-    spinner.run do |spinner|
+    spinner = TTY::Spinner.new('[:spinner] Loading CSV data', clear: false)
+    spinner.run do |it|
       @processor.fetch_data!
-      spinner.success('(loaded)')
+      it.success('(loaded)')
     end
 
-    spinner = TTY::Spinner.new("[:spinner] Building indexes", clear: false)
-    spinner.run do |spinner|
+    spinner = TTY::Spinner.new('[:spinner] Building indexes', clear: false)
+    spinner.run do |it|
       @processor.build_indexes!
-      spinner.success('(done)')
+      it.success('(done)')
     end
 
     answer_to('all')
@@ -32,17 +32,17 @@ class BattingAveragesUi
       print Paint['|> ', :blue, :bright]
 
       user_command = STDIN.gets&.chomp
-      
-      if user_command.nil? || user_command =~ /^q$/i# Ctrl+D
-        puts "Exiting, bye"
+
+      if user_command.nil? || user_command =~ /^q$/i # Ctrl+D
+        puts 'Exiting, bye'
         break
       end
-      
+
       answer_to(user_command)
     end
   end
 
-private
+  private
 
   def answer_to(user_command)
     if user_changed_command?(user_command: user_command)
@@ -60,20 +60,20 @@ private
     when '', /^all$/i
       render_table(@processor.get_all)
     when /^of (.+) in (\d+)$/i
-      if (has_team=@processor.has_team?($1)) && (has_year=@processor.has_year?($2))
+      if (has_team = @processor.team?($1)) && (has_year = @processor.year?($2))
         render_table(@processor.by(team: $1, year: $2))
       else
         puts "No data for #{$1}" unless has_year
         puts "Unknown team #{$1}" unless has_team
       end
     when /^in (\d{4})$/i
-      if @processor.has_year?($1)
+      if @processor.year?($1)
         render_table(@processor.by(year: $1))
       else
         puts "No data for #{$1}"
       end
     when /^of (.+)$/i
-      if @processor.has_team?($1)
+      if @processor.team?($1)
         render_table(@processor.by(team: $1))
       else
         puts "Unknown team #{$1}"
@@ -85,17 +85,19 @@ private
       @processor.previous_page!
       answer_to(@last_command)
     else
-      puts "unknown command"
+      puts 'unknown command'
     end
   end
 
-  def render_table(ranking_data=[])
+  def render_table(ranking_data = [])
     if ranking_data.empty?
-      puts "No data to display"
+      puts 'No data to display'
       return
     end
 
-    puts TTY::Table.new(['playerID', 'yearID', 'Team name(s)', 'Batting Average'], ranking_data).render(:ascii, alignments: [:left, :center, :left, :center], padding: [0,2])
+    table = TTY::Table.new(['playerID', 'yearID', 'Team name(s)', 'Batting Average'], ranking_data)
+    output = table.render(:ascii, alignments: %i[left center left center], padding: [0, 2])
+    puts output
   end
 
   def user_changed_command?(user_command: 'all')

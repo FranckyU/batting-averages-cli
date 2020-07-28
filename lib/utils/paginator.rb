@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Utils
   module Paginator
     DEFAULT_PAGE_SIZE = 30
@@ -7,7 +9,7 @@ module Utils
       @offset = 0
       @per_page = DEFAULT_PAGE_SIZE
     end
-    alias_method :reset_pagination!, :initialize_pagination!
+    alias reset_pagination! initialize_pagination!
 
     def next_page!
       @offset += @per_page
@@ -16,7 +18,7 @@ module Utils
 
     def previous_page!
       @offset -= @per_page
-      @offset = 0 if @offset < 0
+      @offset = 0 if @offset.negative?
     end
   end
 end
