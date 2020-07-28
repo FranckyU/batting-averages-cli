@@ -61,7 +61,7 @@ class BattingAveragesEngine
     @result = if !@global_result_cache.nil?
       @global_result_cache
     else
-      sorted_ranking = sort_working_data(@batting_data)
+      sorted_ranking = get_batting_average_ranking_from(@batting_data)
       
       # CACHE global result to speed up things since we can't leverage indexes
       @global_result_cache = sorted_ranking
@@ -71,17 +71,17 @@ class BattingAveragesEngine
   end
 
   def fetch_by_year(year: nil)
-    @result = sort_working_data(year_working_data(year))
+    @result = get_batting_average_ranking_from(year_working_data(year))
     self
   end
 
   def fetch_by_team(team: nil)
-    @result = sort_working_data(team_working_data(team))
+    @result = get_batting_average_ranking_from(team_working_data(team))
     self
   end
 
   def fetch_by_team_and_year(team: nil, year: nil)
-    @result = sort_working_data(year_working_data(year) & team_working_data(team))
+    @result = get_batting_average_ranking_from(year_working_data(year) & team_working_data(team))
     self
   end
 
@@ -96,7 +96,7 @@ class BattingAveragesEngine
     (@batting_data_by_team_id[team_id.to_s] || []).to_set
   end
 
-  def sort_working_data(working_data = [])
+  def get_batting_average_ranking_from(working_data = [])
     aggregated_data = aggregate_working_data(working_data)
     compute_sorted_batting_average(aggregated_data)
   end
